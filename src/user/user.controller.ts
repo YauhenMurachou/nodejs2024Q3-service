@@ -10,10 +10,12 @@ import {
   NotFoundException,
   Delete,
   Put,
+  ForbiddenException,
 } from '@nestjs/common';
 import { CreateUserDto, UpdatePasswordDto } from './dto/user.dto';
 import { UserService } from './user/user.service';
 import { errors } from '../constants';
+import { validate } from 'class-validator';
 @Controller('user')
 export class UserController {
   constructor(private readonly Userservice: UserService) {}
@@ -33,6 +35,7 @@ export class UserController {
     }
     return this.Userservice.create(createuser);
   }
+
   @Get(':id')
   @HttpCode(200)
   getById(@Param('id') id: string) {
@@ -55,20 +58,28 @@ export class UserController {
 
   @Put(':id')
   @HttpCode(200)
-  updatePass(
+  async updatePass(
     @Param('id') id: string,
     @Body() updatePassdto: UpdatePasswordDto,
   ) {
-    if (!this.isValidId(id)) {
+    const updatePasswordDto = new UpdatePasswordDto();
+    updatePasswordDto.newPassword = updatePassdto.newPassword;
+    updatePasswordDto.oldPassword = updatePassdto.oldPassword;
+    const errorsValidator = await validate(updatePasswordDto);
+    const result = await this.Userservice.updatePassword(id, updatePassdto);
+    if (!this.isValidId(id) || errorsValidator.length) {
       throw new BadRequestException({
         status: HttpStatus.BAD_REQUEST,
         error: errors.BAD_REQUEST,
       });
-    }
-    // if (this.Userservice.updatePassword(id, updatePassdto)) {
-    //   return this.Userservice.updatePassword(id, updatePassdto);
-    // }
-    else {
+    } else if (result === 'not-match') {
+      throw new ForbiddenException({
+        status: HttpStatus.FORBIDDEN,
+        error: 'PASSWORD_NOT_CHANGED',
+      });
+    } else if (result) {
+      return result;
+    } else {
       throw new NotFoundException({
         status: HttpStatus.NOT_FOUND,
         error: errors.NOT_FOUND,
