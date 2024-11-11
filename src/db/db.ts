@@ -1,0 +1,12 @@
+const album = [];
+const artist = [];
+const favs = { artists: [], albums: [], tracks: [] };
+const track = [];
+const token = null;
+const user = [];
+export { album };
+export { artist };
+export { favs };
+export { token };
+export { track };
+export { user };
