@@ -27,6 +27,14 @@ export class ArtistService {
     const index = this.artist.findIndex((item) => item.id === id);
     if (index !== -1) {
       this.artist.splice(index, 1);
+      const tracks = db.track.filter((item) => item.artistId === id);
+      tracks.forEach((track) => {
+        track.artistId = null;
+      });
+      const albums = db.album.filter((item) => item.artistId === id);
+      albums.forEach((album) => {
+        album.artistId = null;
+      });
       return true;
     }
     return false;
