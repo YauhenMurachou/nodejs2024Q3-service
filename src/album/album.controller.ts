@@ -14,6 +14,7 @@ import {
 import { AlbumService } from './album/album.service';
 import { CreateAlbumDto, UpdateAlbumDto } from './dto/album.dto';
 import { errors } from '../constants';
+import { validate } from 'class-validator';
 
 @Controller('album')
 export class AlbumController {
@@ -44,8 +45,13 @@ export class AlbumController {
   }
   @Post()
   @HttpCode(201)
-  create(@Body() createAlbum: CreateAlbumDto) {
-    if (!createAlbum.name) {
+  async create(@Body() createAlbum: CreateAlbumDto) {
+    const createAlbumDto = new CreateAlbumDto();
+    createAlbumDto.name = createAlbum?.name;
+    createAlbumDto.year = createAlbum?.year;
+    createAlbumDto.artistId = createAlbum?.artistId;
+    const errorsValidator = await validate(createAlbumDto);
+    if (!createAlbum.name || !createAlbum.year || errorsValidator.length) {
       throw new BadRequestException({
         status: HttpStatus.BAD_REQUEST,
         error: errors.BAD_REQUEST,
@@ -55,7 +61,7 @@ export class AlbumController {
   }
   @Delete(':id')
   @HttpCode(204)
-  delUser(@Param('id') id: string) {
+  deleteAlbum(@Param('id') id: string) {
     if (!this.isValidId(id)) {
       throw new BadRequestException({
         status: HttpStatus.BAD_REQUEST,
@@ -73,8 +79,35 @@ export class AlbumController {
   }
   @Put(':id')
   @HttpCode(200)
-  updateTrack(@Param('id') id: string, @Body() UpdateAldto: UpdateAlbumDto) {
-    return this.Albumservice.update(id, UpdateAldto);
+  async updateAlbum(
+    @Param('id') id: string,
+    @Body() UpdateAldto: UpdateAlbumDto,
+  ) {
+    const result = await this.Albumservice.update(id, UpdateAldto);
+    const updateAlbumDto = new UpdateAlbumDto();
+    updateAlbumDto.name = UpdateAldto?.name;
+    updateAlbumDto.year = UpdateAldto?.year;
+    updateAlbumDto.artistId = UpdateAldto?.artistId;
+    const errorsValidator = await validate(updateAlbumDto);
+
+    if (
+      !this.isValidId(id) ||
+      !UpdateAldto.name ||
+      !UpdateAldto.year ||
+      errorsValidator.length
+    ) {
+      throw new BadRequestException({
+        status: HttpStatus.BAD_REQUEST,
+        error: errors.BAD_REQUEST,
+      });
+    } else if (result) {
+      return result;
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        error: errors.NOT_FOUND,
+      });
+    }
   }
 
   private isValidId(id: string): boolean {

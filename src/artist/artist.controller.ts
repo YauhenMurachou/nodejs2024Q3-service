@@ -58,7 +58,7 @@ export class ArtistController {
   }
   @Delete(':id')
   @HttpCode(204)
-  delUser(@Param('id') id: string) {
+  deleteArtist(@Param('id') id: string) {
     if (!this.isValidId(id)) {
       throw new BadRequestException({
         status: HttpStatus.BAD_REQUEST,

@@ -28,16 +28,19 @@ export class AlbumService {
   }
 
   delete(id: string) {
-    const newArrAlbum = db.album.filter((item) => item.id !== id);
-    this.album = newArrAlbum;
-    if (this.album.length == db.album.length) {
-      return false;
+    const index = this.album.findIndex((item) => item.id === id);
+    if (index !== -1) {
+      this.album.splice(index, 1);
+      return true;
     }
-    return this.album;
+    return false;
   }
 
   async update(id: string, UpdateAlbumDto: UpdateAlbumDto) {
     const album = this.album.find((item) => item.id === id);
+    if (!album) {
+      return null;
+    }
     album.name = UpdateAlbumDto.name;
     album.artistId = UpdateAlbumDto.artistId;
     album.year = UpdateAlbumDto.year;
