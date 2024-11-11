@@ -31,6 +31,10 @@ export class AlbumService {
     const index = this.album.findIndex((item) => item.id === id);
     if (index !== -1) {
       this.album.splice(index, 1);
+      const tracks = db.track.filter((item) => item.albumId === id);
+      tracks.forEach((track) => {
+        track.albumId = null;
+      });
       return true;
     }
     return false;
