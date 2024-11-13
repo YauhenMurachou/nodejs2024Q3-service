@@ -1,15 +1,12 @@
 # Home Library Service
 
-## Prerequisites
-
-- Git - [Download & Install Git](https://git-scm.com/downloads).
-- Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
-
 ## Downloading
 
 ```
 git clone https://github.com/YauhenMurachou/nodejs2024Q3-service
 ```
+
+toogle on develop branch
 
 ## Installing NPM modules
 
