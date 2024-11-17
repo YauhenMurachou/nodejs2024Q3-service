@@ -13,8 +13,26 @@ import { FavsService } from './favs/favs/favs.service';
 import { TrackService } from './track/track/track.service';
 import { UserService } from './user/user/user.service';
 
+import { FavsModule } from './favs/favs/favs.module';
+import { ConfigModule } from '@nestjs/config';
+import * as Joi from 'joi';
+import { DatabaseModule } from './db/database.module';
+
 @Module({
-  imports: [],
+  imports: [
+    ConfigModule.forRoot({
+      validationSchema: Joi.object({
+        POSTGRES_HOST: Joi.string().required(),
+        POSTGRES_PORT: Joi.number().required(),
+        POSTGRES_USER: Joi.string().required(),
+        POSTGRES_PASSWORD: Joi.string().required(),
+        POSTGRES_DB: Joi.string().required(),
+        PORT: Joi.number(),
+      }),
+    }),
+    FavsModule,
+    DatabaseModule,
+  ],
   controllers: [
     AppController,
     AlbumController,
