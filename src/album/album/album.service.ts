@@ -1,19 +1,25 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 
 import { CreateAlbumDto, UpdateAlbumDto } from '../dto/album.dto';
 
-import * as db from '../../db/db';
 import { v4 as uuidv4 } from 'uuid';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { AlbumEntity } from '../../entities/album.entity';
+
 @Injectable()
 export class AlbumService {
-  album = db.album;
-  getall() {
-    console.log(this.album);
-    return this.album;
+  constructor(
+    @InjectRepository(AlbumEntity)
+    private albumRepository: Repository<AlbumEntity>,
+  ) {}
+
+  async getAll() {
+    return this.albumRepository.find();
   }
 
-  getById(id: string) {
-    return this.album.find((item) => item.id === id);
+  async getById(id: string) {
+    return this.albumRepository.findOneBy({ id });
   }
 
   async create(CreateAlbumDto: CreateAlbumDto) {
@@ -22,32 +28,26 @@ export class AlbumService {
       id: uuidv4(),
     };
 
-    this.album.push(newAlbum);
-
-    return newAlbum;
+    return this.albumRepository.create(newAlbum);
   }
 
-  delete(id: string) {
-    const index = this.album.findIndex((item) => item.id === id);
-    if (index !== -1) {
-      this.album.splice(index, 1);
-      const tracks = db.track.filter((item) => item.albumId === id);
-      tracks.forEach((track) => {
-        track.albumId = null;
-      });
-      return true;
+  async delete(id: string) {
+    const album = await this.getById(id);
+    if (!album) {
+      throw new BadRequestException();
     }
-    return false;
+
+    await this.albumRepository.delete({ id });
   }
 
-  async update(id: string, UpdateAlbumDto: UpdateAlbumDto) {
-    const album = this.album.find((item) => item.id === id);
+  async update(id: string, updateAlbumDto: UpdateAlbumDto) {
+    const album = await this.getById(id);
     if (!album) {
       return null;
     }
-    album.name = UpdateAlbumDto.name;
-    album.artistId = UpdateAlbumDto.artistId;
-    album.year = UpdateAlbumDto.year;
-    return album;
+
+    await this.albumRepository.update({ id }, { ...updateAlbumDto });
+
+    return this.getById(id);
   }
 }

@@ -18,11 +18,11 @@ import { validate } from 'class-validator';
 
 @Controller('album')
 export class AlbumController {
-  constructor(private readonly Albumservice: AlbumService) {}
+  constructor(private readonly albumservice: AlbumService) {}
   @Get()
   @HttpCode(200)
-  getall() {
-    return this.Albumservice.getall();
+  getAll() {
+    return this.albumservice.getAll();
   }
   @Get(':id')
   @HttpCode(200)
@@ -34,8 +34,8 @@ export class AlbumController {
       });
     }
 
-    if (this.Albumservice.getById(id)) {
-      return this.Albumservice.getById(id);
+    if (this.albumservice.getById(id)) {
+      return this.albumservice.getById(id);
     } else {
       throw new NotFoundException({
         status: HttpStatus.NOT_FOUND,
@@ -57,7 +57,7 @@ export class AlbumController {
         error: errors.BAD_REQUEST,
       });
     }
-    return this.Albumservice.create(createAlbum);
+    return this.albumservice.create(createAlbum);
   }
   @Delete(':id')
   @HttpCode(204)
@@ -68,8 +68,8 @@ export class AlbumController {
         error: errors.BAD_REQUEST,
       });
     }
-    if (this.Albumservice.delete(id)) {
-      return this.Albumservice.delete(id);
+    if (this.albumservice.delete(id)) {
+      return this.albumservice.delete(id);
     } else {
       throw new NotFoundException({
         status: HttpStatus.NOT_FOUND,
@@ -83,7 +83,7 @@ export class AlbumController {
     @Param('id') id: string,
     @Body() UpdateAldto: UpdateAlbumDto,
   ) {
-    const result = await this.Albumservice.update(id, UpdateAldto);
+    const result = await this.albumservice.update(id, UpdateAldto);
     const updateAlbumDto = new UpdateAlbumDto();
     updateAlbumDto.name = UpdateAldto?.name;
     updateAlbumDto.year = UpdateAldto?.year;
