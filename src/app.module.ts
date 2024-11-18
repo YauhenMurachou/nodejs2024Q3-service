@@ -16,6 +16,7 @@ import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
 import { DatabaseModule } from './db/database.module';
 import { AlbumModule } from './album/album.module';
+import { ArtistModule } from './artist/artist.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { AlbumModule } from './album/album.module';
     }),
     FavoriteModule,
     AlbumModule,
+    ArtistModule,
     DatabaseModule,
   ],
   controllers: [AppController],

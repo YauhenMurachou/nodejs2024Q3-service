@@ -1,42 +1,38 @@
-version: "3.8"
+version: '3.8'
 services:
   postgres:
-    build: 
+    build:
       context: ./postgres-docker
       dockerfile: Dockerfile
     container_name: postgres
-    environment: 
+    environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-    ports: 
-      - "5431:5432"
+    ports:
+      - '5431:5432'
     volumes:
       - ./init-scripts:/docker-entrypoint-initdb.d
     networks:
       - my_network
     restart: always
-#  nest-api-rest:
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#    container_name: nest-api-rest
-#    depends_on:
-#      - postgres
-#    env_file:
-#      - .env
-#    ports:
-#      - "${PORT}:${PORT}"
-#    networks:
-#      - my_network
-#    restart: always
-#    volumes:
-#      - "./:/usr/src/app/"
-#      - /usr/src/app/node_modules
+  nest-api-rest:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nest-api-rest
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+    ports:
+      - '${PORT}:${PORT}'
+    networks:
+      - my_network
+    volumes:
+      - ./:/usr/src/app/node_modules
+    restart: always
 networks:
   my_network:
     name: custom_network
     driver: bridge
-
-
-

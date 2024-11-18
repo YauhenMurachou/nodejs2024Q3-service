@@ -21,21 +21,23 @@ export class AlbumController {
   constructor(private readonly albumservice: AlbumService) {}
   @Get()
   @HttpCode(200)
-  getAll() {
-    return this.albumservice.getAll();
+  async getAll() {
+    return await this.albumservice.getAll();
   }
+
   @Get(':id')
   @HttpCode(200)
-  getById(@Param('id') id: string) {
+  async getById(@Param('id') id: string) {
     if (!this.isValidId(id)) {
       throw new BadRequestException({
         status: HttpStatus.BAD_REQUEST,
         error: errors.BAD_REQUEST,
       });
     }
+    const album = await this.albumservice.getById(id);
 
-    if (this.albumservice.getById(id)) {
-      return this.albumservice.getById(id);
+    if (album) {
+      return album;
     } else {
       throw new NotFoundException({
         status: HttpStatus.NOT_FOUND,
@@ -43,6 +45,7 @@ export class AlbumController {
       });
     }
   }
+
   @Post()
   @HttpCode(201)
   async create(@Body() createAlbum: CreateAlbumDto) {
@@ -59,31 +62,31 @@ export class AlbumController {
     }
     return this.albumservice.create(createAlbum);
   }
+
   @Delete(':id')
   @HttpCode(204)
-  deleteAlbum(@Param('id') id: string) {
+  async deleteAlbum(@Param('id') id: string) {
     if (!this.isValidId(id)) {
       throw new BadRequestException({
         status: HttpStatus.BAD_REQUEST,
         error: errors.BAD_REQUEST,
       });
     }
-    if (this.albumservice.delete(id)) {
-      return this.albumservice.delete(id);
-    } else {
+    const result = await this.albumservice.delete(id);
+    if (!result) {
       throw new NotFoundException({
         status: HttpStatus.NOT_FOUND,
         error: errors.NOT_FOUND,
       });
     }
   }
+
   @Put(':id')
   @HttpCode(200)
   async updateAlbum(
     @Param('id') id: string,
     @Body() UpdateAldto: UpdateAlbumDto,
   ) {
-    const result = await this.albumservice.update(id, UpdateAldto);
     const updateAlbumDto = new UpdateAlbumDto();
     updateAlbumDto.name = UpdateAldto?.name;
     updateAlbumDto.year = UpdateAldto?.year;
@@ -100,7 +103,9 @@ export class AlbumController {
         status: HttpStatus.BAD_REQUEST,
         error: errors.BAD_REQUEST,
       });
-    } else if (result) {
+    }
+    const result = await this.albumservice.update(id, UpdateAldto);
+    if (result) {
       return result;
     } else {
       throw new NotFoundException({
