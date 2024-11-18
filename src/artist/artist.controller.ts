@@ -18,25 +18,25 @@ import { CreateArtistDto, UpdateArtistDto } from './dto/artist.dto';
 import { errors } from '../constants';
 @Controller('artist')
 export class ArtistController {
-  constructor(private readonly artistService: ArtistService) {}
+  constructor(private readonly artistservice: ArtistService) {}
   @Get()
-  @HttpCode(HttpStatus.OK)
-  async getAll() {
-    return await this.artistService.getAll();
+  @HttpCode(200)
+  getall() {
+    return this.artistservice.getall();
   }
 
   @Get(':id')
-  @HttpCode(HttpStatus.OK)
-  async getById(@Param('id') id: string) {
+  @HttpCode(200)
+  getById(@Param('id') id: string) {
     if (!this.isValidId(id)) {
       throw new BadRequestException({
         status: HttpStatus.BAD_REQUEST,
         error: errors.BAD_REQUEST,
       });
     }
-    const artist = await this.artistService.getById(id);
-    if (artist) {
-      return artist;
+
+    if (this.artistservice.getById(id)) {
+      return this.artistservice.getById(id);
     } else {
       throw new NotFoundException({
         status: HttpStatus.NOT_FOUND,
@@ -44,31 +44,30 @@ export class ArtistController {
       });
     }
   }
-
   @Post()
-  @HttpCode(HttpStatus.CREATED)
-  async create(@Body() createArtistDto: CreateArtistDto) {
-    if (!createArtistDto.name || typeof createArtistDto.grammy !== 'boolean') {
+  @HttpCode(201)
+  create(@Body() createArtist: CreateArtistDto) {
+    if (!createArtist.name || !createArtist.grammy) {
       throw new BadRequestException({
         status: HttpStatus.BAD_REQUEST,
         error: errors.BAD_REQUEST,
       });
     }
 
-    return await this.artistService.create(createArtistDto);
+    return this.artistservice.create(createArtist);
   }
   @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async delete(@Param('id') id: string) {
+  @HttpCode(204)
+  deleteArtist(@Param('id') id: string) {
     if (!this.isValidId(id)) {
       throw new BadRequestException({
         status: HttpStatus.BAD_REQUEST,
         error: errors.BAD_REQUEST,
       });
     }
-
-    const result = await this.artistService.delete(id);
-    if (!result) {
+    if (this.artistservice.delete(id)) {
+      return this.artistservice.delete(id);
+    } else {
       throw new NotFoundException({
         status: HttpStatus.NOT_FOUND,
         error: errors.NOT_FOUND,
@@ -76,35 +75,29 @@ export class ArtistController {
     }
   }
   @Put(':id')
-  @HttpCode(HttpStatus.OK)
-  async update(
+  @HttpCode(200)
+  async updateTrack(
     @Param('id') id: string,
-    @Body() updateArtistDto: UpdateArtistDto,
+    @Body() UpdateArtistdto: UpdateArtistDto,
   ) {
-    if (!this.isValidId(id)) {
+    const updateArtistDto = new UpdateArtistDto();
+    updateArtistDto.name = UpdateArtistdto.name;
+    updateArtistDto.grammy = UpdateArtistdto.grammy;
+    const errorsValidator = await validate(updateArtistDto);
+
+    if (!this.isValidId(id) || errorsValidator.length) {
       throw new BadRequestException({
         status: HttpStatus.BAD_REQUEST,
         error: errors.BAD_REQUEST,
       });
-    }
-
-    const validationErrors = await validate(updateArtistDto);
-    if (validationErrors.length > 0) {
-      throw new BadRequestException({
-        status: HttpStatus.BAD_REQUEST,
-        error: errors.BAD_REQUEST,
-      });
-    }
-
-    const updatedArtist = await this.artistService.update(id, updateArtistDto);
-    if (!updatedArtist) {
+    } else if (this.artistservice.update(id, UpdateArtistdto)) {
+      return this.artistservice.update(id, UpdateArtistdto);
+    } else {
       throw new NotFoundException({
         status: HttpStatus.NOT_FOUND,
         error: errors.NOT_FOUND,
       });
     }
-
-    return updatedArtist;
   }
 
   private isValidId(id: string): boolean {

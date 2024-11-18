@@ -2,31 +2,18 @@ import { Injectable } from '@nestjs/common';
 
 import { CreateAlbumDto, UpdateAlbumDto } from '../dto/album.dto';
 
+import * as db from '../../db/db';
 import { v4 as uuidv4 } from 'uuid';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { AlbumEntity } from '../../entities/album.entity';
-import { TrackEntity } from '../../entities/track.entity';
-
 @Injectable()
 export class AlbumService {
-  constructor(
-    @InjectRepository(AlbumEntity)
-    private albumRepository: Repository<AlbumEntity>,
-    @InjectRepository(TrackEntity)
-    private trackRepository: Repository<TrackEntity>,
-  ) {}
-
-  async getAll() {
-    return this.albumRepository.find();
+  album = db.album;
+  getall() {
+    console.log(this.album);
+    return this.album;
   }
 
-  async getById(id: string) {
-    const album = await this.albumRepository.findOneBy({ id });
-    if (!album) {
-      return null;
-    }
-    return album;
+  getById(id: string) {
+    return this.album.find((item) => item.id === id);
   }
 
   async create(CreateAlbumDto: CreateAlbumDto) {
@@ -34,28 +21,33 @@ export class AlbumService {
       ...CreateAlbumDto,
       id: uuidv4(),
     };
-    return this.albumRepository.save(newAlbum);
+
+    this.album.push(newAlbum);
+
+    return newAlbum;
   }
 
-  async delete(id: string) {
-    const album = await this.getById(id);
+  delete(id: string) {
+    const index = this.album.findIndex((item) => item.id === id);
+    if (index !== -1) {
+      this.album.splice(index, 1);
+      const tracks = db.track.filter((item) => item.albumId === id);
+      tracks.forEach((track) => {
+        track.albumId = null;
+      });
+      return true;
+    }
+    return false;
+  }
+
+  async update(id: string, UpdateAlbumDto: UpdateAlbumDto) {
+    const album = this.album.find((item) => item.id === id);
     if (!album) {
       return null;
     }
-
-    await this.trackRepository.update({ albumId: id }, { albumId: null });
-
-    await this.albumRepository.delete({ id });
-    return true;
-  }
-
-  async update(id: string, updateAlbumDto: UpdateAlbumDto) {
-    const album = await this.getById(id);
-    if (!album) {
-      return null;
-    }
-
-    await this.albumRepository.update({ id }, updateAlbumDto);
-    return this.getById(id);
+    album.name = UpdateAlbumDto.name;
+    album.artistId = UpdateAlbumDto.artistId;
+    album.year = UpdateAlbumDto.year;
+    return album;
   }
 }
