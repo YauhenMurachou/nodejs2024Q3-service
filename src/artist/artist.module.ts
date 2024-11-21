@@ -8,8 +8,8 @@ import { AlbumEntity } from '../entities/album.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([ArtistEntity, TrackEntity, AlbumEntity])],
-  controllers: [ArtistController],
   providers: [ArtistService],
+  controllers: [ArtistController],
   exports: [ArtistService],
 })
 export class ArtistModule {}

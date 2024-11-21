@@ -81,7 +81,11 @@ export class ArtistController {
     @Param('id') id: string,
     @Body() updateArtistDto: UpdateArtistDto,
   ) {
-    if (!this.isValidId(id)) {
+    const newUpdateArtistDto = new UpdateArtistDto();
+    newUpdateArtistDto.name = updateArtistDto?.name;
+    newUpdateArtistDto.grammy = updateArtistDto?.grammy;
+    const errorsValidator = await validate(newUpdateArtistDto);
+    if (!this.isValidId(id) || errorsValidator.length) {
       throw new BadRequestException({
         status: HttpStatus.BAD_REQUEST,
         error: errors.BAD_REQUEST,
