@@ -3,17 +3,31 @@ import { CreateUserDto, UpdatePasswordDto } from '../dto/user.dto';
 import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcrypt';
 
-import * as db from '../../db/db';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserEntity } from '../../entities/user.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UserService {
-  user = db.user;
-  getall() {
-    return db.user;
+  constructor(
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>,
+  ) {}
+
+  async getall() {
+    return this.userRepository.find();
+  }
+
+  async getById(id: string) {
+    const user = await this.userRepository.findOneBy({ id });
+    if (!user) {
+      return null;
+    }
+    return user;
   }
 
   async create(CreateUserDto: CreateUserDto) {
-    const newUser = {
+    const newAlbum = {
       ...CreateUserDto,
       id: uuidv4(),
       password: undefined,
@@ -21,21 +35,26 @@ export class UserService {
       createdAt: Math.floor(Date.now() / 100),
       updatedAt: Math.floor(Date.now() / 100),
     };
-    db.user.push({
-      ...newUser,
-      password: await bcrypt.hash(CreateUserDto.password, 10),
-    });
-    return newUser;
-  }
-  getById(id: string) {
-    return this.user.find((item) => item.id === id);
+    return this.userRepository.create(newAlbum);
+    // const newUser = {
+    //   ...CreateUserDto,
+    //   id: uuidv4(),
+    //   password: undefined,
+    //   version: 1,
+    //   createdAt: Math.floor(Date.now() / 100),
+    //   updatedAt: Math.floor(Date.now() / 100),
+    // };
+    // db.user.push({
+    //   ...newUser,
+    //   password: await bcrypt.hash(CreateUserDto.password, 10),
+    // });
+    // return newUser;
   }
 
   async updatePassword(id: string, updatePassdto: UpdatePasswordDto) {
-    const user = db.user.find((item) => item.id === id);
-
+    const user = await this.getById(id);
     if (!user) {
-      return false;
+      return null;
     }
 
     const match = await bcrypt.compare(
@@ -59,12 +78,21 @@ export class UserService {
     };
   }
 
-  delete(id: string) {
-    const updatedUsers = db.user.filter((item) => item.id !== id);
-    this.user = updatedUsers;
-    if (this.user.length == db.user.length) {
-      return false;
+  async delete(id: string) {
+    const user = await this.getById(id);
+    if (!user) {
+      return null;
     }
-    return this.user;
+
+    // await this.trackRepository.update({ albumId: id }, { albumId: null });
+
+    await this.userRepository.delete({ id });
+    return true;
+    // const updatedUsers = db.user.filter((item) => item.id !== id);
+    // this.user = updatedUsers;
+    // if (this.user.length == db.user.length) {
+    //   return false;
+    // }
+    // return this.user;
   }
 }

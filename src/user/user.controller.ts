@@ -19,14 +19,16 @@ import { validate } from 'class-validator';
 @Controller('user')
 export class UserController {
   constructor(private readonly Userservice: UserService) {}
+
   @Get()
   @HttpCode(200)
-  getall() {
-    return this.Userservice.getall();
+  async getall() {
+    return await this.Userservice.getall();
   }
+
   @Post()
   @HttpCode(201)
-  create(@Body() createuser: CreateUserDto) {
+  async create(@Body() createuser: CreateUserDto) {
     if (!createuser.login || !createuser.password) {
       throw new BadRequestException({
         status: HttpStatus.BAD_REQUEST,
@@ -38,16 +40,16 @@ export class UserController {
 
   @Get(':id')
   @HttpCode(200)
-  getById(@Param('id') id: string) {
+  async getById(@Param('id') id: string) {
     if (!this.isValidId(id)) {
       throw new BadRequestException({
         status: HttpStatus.BAD_REQUEST,
         error: errors.BAD_REQUEST,
       });
     }
-
-    if (this.Userservice.getById(id)) {
-      return this.Userservice.getById(id);
+    const user = await this.Userservice.getById(id);
+    if (user) {
+      return user;
     } else {
       throw new NotFoundException({
         status: HttpStatus.NOT_FOUND,
@@ -66,13 +68,15 @@ export class UserController {
     updatePasswordDto.newPassword = updatePassdto.newPassword;
     updatePasswordDto.oldPassword = updatePassdto.oldPassword;
     const errorsValidator = await validate(updatePasswordDto);
-    const result = await this.Userservice.updatePassword(id, updatePassdto);
     if (!this.isValidId(id) || errorsValidator.length) {
       throw new BadRequestException({
         status: HttpStatus.BAD_REQUEST,
         error: errors.BAD_REQUEST,
       });
-    } else if (result === 'not-match') {
+    }
+    const result = await this.Userservice.updatePassword(id, updatePassdto);
+
+    if (result === 'not-match') {
       throw new ForbiddenException({
         status: HttpStatus.FORBIDDEN,
         error: 'PASSWORD_NOT_CHANGED',
@@ -89,15 +93,16 @@ export class UserController {
 
   @Delete(':id')
   @HttpCode(204)
-  delUser(@Param('id') id: string) {
+  async delUser(@Param('id') id: string) {
     if (!this.isValidId(id)) {
       throw new BadRequestException({
         status: HttpStatus.BAD_REQUEST,
         error: errors.BAD_REQUEST,
       });
     }
-    if (this.Userservice.delete(id)) {
-      return this.Userservice.delete(id);
+    const result = await this.Userservice.delete(id);
+    if (result) {
+      return result;
     } else {
       throw new NotFoundException({
         status: HttpStatus.NOT_FOUND,

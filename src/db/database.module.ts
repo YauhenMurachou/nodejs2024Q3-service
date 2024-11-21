@@ -4,6 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { FavoriteEntity } from '../entities/favorite.entity';
 import { AlbumEntity } from '../entities/album.entity';
 import { ArtistEntity } from '../entities/artist.entity';
+import { UserEntity } from '../entities/user.entity';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { ArtistEntity } from '../entities/artist.entity';
         username: configService.get('POSTGRES_USER'),
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DB'),
-        entities: [FavoriteEntity, AlbumEntity, ArtistEntity],
+        entities: [FavoriteEntity, AlbumEntity, ArtistEntity, UserEntity],
         synchronize: true,
       }),
     }),
