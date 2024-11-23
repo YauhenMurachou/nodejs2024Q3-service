@@ -1,15 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AlbumController } from './album/album.controller';
-import { ArtistController } from './artist/artist.controller';
-import { TrackController } from './track/track.controller';
-import { UserController } from './user/user.controller';
-
-import { AlbumService } from './album/album/album.service';
-import { ArtistService } from './artist/artist/artist.service';
-import { TrackService } from './track/track/track.service';
-import { UserService } from './user/user/user.service';
 
 import { FavoriteModule } from './favorite/favorite.module';
 import { ConfigModule } from '@nestjs/config';
@@ -18,6 +9,7 @@ import { DatabaseModule } from './db/database.module';
 import { AlbumModule } from './album/album.module';
 import { ArtistModule } from './artist/artist.module';
 import { UserModule } from './user/user.module';
+import { TrackModule } from './track/track.module';
 
 @Module({
   imports: [
@@ -31,11 +23,12 @@ import { UserModule } from './user/user.module';
         PORT: Joi.number(),
       }),
     }),
-    FavoriteModule,
     AlbumModule,
     ArtistModule,
-    UserModule,
     DatabaseModule,
+    FavoriteModule,
+    TrackModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],

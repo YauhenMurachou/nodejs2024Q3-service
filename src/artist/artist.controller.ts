@@ -16,6 +16,7 @@ import { validate } from 'class-validator';
 import { ArtistService } from './artist/artist.service';
 import { CreateArtistDto, UpdateArtistDto } from './dto/artist.dto';
 import { errors } from '../constants';
+
 @Controller('artist')
 export class ArtistController {
   constructor(private readonly artistService: ArtistService) {}
@@ -57,6 +58,7 @@ export class ArtistController {
 
     return await this.artistService.create(createArtistDto);
   }
+
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async delete(@Param('id') id: string) {
@@ -75,6 +77,7 @@ export class ArtistController {
       });
     }
   }
+
   @Put(':id')
   @HttpCode(HttpStatus.OK)
   async update(

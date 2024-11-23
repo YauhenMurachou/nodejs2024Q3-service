@@ -5,6 +5,7 @@ import { FavoriteEntity } from '../entities/favorite.entity';
 import { AlbumEntity } from '../entities/album.entity';
 import { ArtistEntity } from '../entities/artist.entity';
 import { UserEntity } from '../entities/user.entity';
+import { TrackEntity } from '../entities/track.entity';
 
 @Module({
   imports: [
@@ -18,7 +19,13 @@ import { UserEntity } from '../entities/user.entity';
         username: configService.get('POSTGRES_USER'),
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DB'),
-        entities: [FavoriteEntity, AlbumEntity, ArtistEntity, UserEntity],
+        entities: [
+          AlbumEntity,
+          ArtistEntity,
+          FavoriteEntity,
+          TrackEntity,
+          UserEntity,
+        ],
         synchronize: true,
       }),
     }),

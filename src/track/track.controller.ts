@@ -19,15 +19,16 @@ import { validate } from 'class-validator';
 @Controller('track')
 export class TrackController {
   constructor(private readonly Trackservice: TrackService) {}
+
   @Get()
   @HttpCode(200)
-  getall() {
-    return this.Trackservice.getall();
+  async getall() {
+    return await this.Trackservice.getall();
   }
 
   @Get(':id')
   @HttpCode(200)
-  getById(@Param('id') id: string) {
+  async getById(@Param('id') id: string) {
     if (!this.isValidId(id)) {
       throw new BadRequestException({
         status: HttpStatus.BAD_REQUEST,
@@ -35,8 +36,10 @@ export class TrackController {
       });
     }
 
-    if (this.Trackservice.getById(id)) {
-      return this.Trackservice.getById(id);
+    const track = await this.Trackservice.getById(id);
+
+    if (track) {
+      return track;
     } else {
       throw new NotFoundException({
         status: HttpStatus.NOT_FOUND,
@@ -59,15 +62,16 @@ export class TrackController {
 
   @Delete(':id')
   @HttpCode(204)
-  deleteTrack(@Param('id') id: string) {
+  async deleteTrack(@Param('id') id: string) {
     if (!this.isValidId(id)) {
       throw new BadRequestException({
         status: HttpStatus.BAD_REQUEST,
         error: errors.BAD_REQUEST,
       });
     }
-    if (this.Trackservice.delete(id)) {
-      return this.Trackservice.delete(id);
+    const result = await this.Trackservice.delete(id);
+    if (result) {
+      return result;
     } else {
       throw new NotFoundException({
         status: HttpStatus.NOT_FOUND,
@@ -87,13 +91,15 @@ export class TrackController {
     updateTrackDto.duration = UpdateTrackdto?.duration;
     updateTrackDto.artistId = UpdateTrackdto?.artistId;
     const errorsValidator = await validate(updateTrackDto);
-    const result = await this.Trackservice.update(id, UpdateTrackdto);
     if (!this.isValidId(id) || errorsValidator.length) {
       throw new BadRequestException({
         status: HttpStatus.BAD_REQUEST,
         error: errors.BAD_REQUEST,
       });
-    } else if (result) {
+    }
+    const result = await this.Trackservice.update(id, UpdateTrackdto);
+
+    if (result) {
       return result;
     } else {
       throw new NotFoundException({

@@ -11,7 +11,7 @@ export class CreateTrackrDto {
 
   @IsString()
   @IsOptional()
-  albumId: string[];
+  albumId: string;
 
   @IsNumber()
   @IsOptional()
@@ -29,7 +29,7 @@ export class UpdateTrackDto {
 
   @IsString()
   @IsOptional()
-  albumId: string[];
+  albumId: string;
 
   @IsNumber()
   @IsOptional()
