@@ -1,5 +1,4 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
-import { UserEntity } from './user.entity';
 
 @Entity('favorites')
 export class FavoriteEntity {
