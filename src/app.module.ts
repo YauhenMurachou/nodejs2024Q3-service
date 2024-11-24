@@ -10,6 +10,7 @@ import { AlbumModule } from './album/album.module';
 import { ArtistModule } from './artist/artist.module';
 import { UserModule } from './user/user.module';
 import { TrackModule } from './track/track.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { TrackModule } from './track/track.module';
         PORT: Joi.number(),
       }),
     }),
+    AuthModule,
     AlbumModule,
     ArtistModule,
     DatabaseModule,

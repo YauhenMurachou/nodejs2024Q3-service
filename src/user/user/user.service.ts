@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateUserDto, UpdatePasswordDto } from '../dto/user.dto';
 import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcrypt';
@@ -26,16 +26,20 @@ export class UserService {
     return user;
   }
 
-  async create(CreateUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto) {
+    console.log('CreateUserDto', createUserDto);
     const newUser = {
-      ...CreateUserDto,
+      ...createUserDto,
       id: uuidv4(),
-      password: undefined,
+      // password: undefined,
       version: 1,
-      createdAt: Math.floor(Date.now() / 100),
-      updatedAt: Math.floor(Date.now() / 100),
+      // createdAt: Date.now(),
+      // updatedAt: Date.now(),
     };
-    return this.userRepository.create(newUser);
+    const newUserSave = await this.userRepository.create(newUser);
+    await this.userRepository.save(newUserSave);
+    const { password: _noob, ...user } = newUserSave;
+    return user;
   }
 
   async updatePassword(id: string, updatePassdto: UpdatePasswordDto) {

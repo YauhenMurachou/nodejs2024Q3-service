@@ -6,6 +6,7 @@ import { AlbumEntity } from '../entities/album.entity';
 import { ArtistEntity } from '../entities/artist.entity';
 import { UserEntity } from '../entities/user.entity';
 import { TrackEntity } from '../entities/track.entity';
+import { SignupEntity } from '../entities/signup.entity';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { TrackEntity } from '../entities/track.entity';
           AlbumEntity,
           ArtistEntity,
           FavoriteEntity,
+          SignupEntity,
           TrackEntity,
           UserEntity,
         ],

@@ -10,23 +10,28 @@ import {
   BadRequestException,
   Put,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { TrackService } from './track/track.service';
 import { CreateTrackrDto, UpdateTrackDto } from './dto/track.dto';
 import { errors } from '../constants';
 import { validate } from 'class-validator';
+// import { JwtAuthGuard } from '../auth/auth.guard';
 
 @Controller('track')
+// @UseGuards(JwtAuthGuard)
 export class TrackController {
   constructor(private readonly Trackservice: TrackService) {}
 
   @Get()
+  // @UseGuards(JwtAuthGuard)
   @HttpCode(200)
   async getall() {
     return await this.Trackservice.getall();
   }
 
   @Get(':id')
+  // @UseGuards(JwtAuthGuard)
   @HttpCode(200)
   async getById(@Param('id') id: string) {
     if (!this.isValidId(id)) {
@@ -49,6 +54,7 @@ export class TrackController {
   }
 
   @Post()
+  // @UseGuards(JwtAuthGuard)
   @HttpCode(201)
   async create(@Body() createTrack: CreateTrackrDto) {
     if (!createTrack.name || !createTrack.duration) {
@@ -61,6 +67,7 @@ export class TrackController {
   }
 
   @Delete(':id')
+  // @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   async deleteTrack(@Param('id') id: string) {
     if (!this.isValidId(id)) {
@@ -81,6 +88,7 @@ export class TrackController {
   }
 
   @Put(':id')
+  // @UseGuards(JwtAuthGuard)
   @HttpCode(200)
   async updateTrack(
     @Param('id') id: string,
