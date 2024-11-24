@@ -27,7 +27,7 @@ export class UserService {
   }
 
   async create(CreateUserDto: CreateUserDto) {
-    const newAlbum = {
+    const newUser = {
       ...CreateUserDto,
       id: uuidv4(),
       password: undefined,
@@ -35,20 +35,7 @@ export class UserService {
       createdAt: Math.floor(Date.now() / 100),
       updatedAt: Math.floor(Date.now() / 100),
     };
-    return this.userRepository.create(newAlbum);
-    // const newUser = {
-    //   ...CreateUserDto,
-    //   id: uuidv4(),
-    //   password: undefined,
-    //   version: 1,
-    //   createdAt: Math.floor(Date.now() / 100),
-    //   updatedAt: Math.floor(Date.now() / 100),
-    // };
-    // db.user.push({
-    //   ...newUser,
-    //   password: await bcrypt.hash(CreateUserDto.password, 10),
-    // });
-    // return newUser;
+    return this.userRepository.create(newUser);
   }
 
   async updatePassword(id: string, updatePassdto: UpdatePasswordDto) {
@@ -83,16 +70,7 @@ export class UserService {
     if (!user) {
       return null;
     }
-
-    // await this.trackRepository.update({ albumId: id }, { albumId: null });
-
     await this.userRepository.delete({ id });
     return true;
-    // const updatedUsers = db.user.filter((item) => item.id !== id);
-    // this.user = updatedUsers;
-    // if (this.user.length == db.user.length) {
-    //   return false;
-    // }
-    // return this.user;
   }
 }
