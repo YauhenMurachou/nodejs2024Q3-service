@@ -21,9 +21,9 @@ export class UserEntity {
   @VersionColumn()
   version: number;
 
-  @CreateDateColumn({ type: 'date' })
+  @CreateDateColumn({ type: 'timestamp' })
   createdAt: number;
 
-  @UpdateDateColumn({ type: 'date' })
+  @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: number;
 }

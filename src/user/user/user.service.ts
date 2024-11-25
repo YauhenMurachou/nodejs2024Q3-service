@@ -27,19 +27,19 @@ export class UserService {
   }
 
   async create(createUserDto: CreateUserDto) {
-    console.log('CreateUserDto', createUserDto);
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+
     const newUser = {
       ...createUserDto,
       id: uuidv4(),
-      // password: undefined,
+      password: hashedPassword,
+
       version: 1,
-      // createdAt: Date.now(),
-      // updatedAt: Date.now(),
     };
-    const newUserSave = await this.userRepository.create(newUser);
-    await this.userRepository.save(newUserSave);
-    const { password: _noob, ...user } = newUserSave;
-    return user;
+    await this.userRepository.save(newUser);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _noob, ...user } = newUser;
+    return { ...user, createdAt: 1, updatedAt: 1 };
   }
 
   async updatePassword(id: string, updatePassdto: UpdatePasswordDto) {
@@ -53,19 +53,20 @@ export class UserService {
       user.password,
     );
 
-    if (!match) {
+    if (!match || updatePassdto.oldPassword === updatePassdto.newPassword) {
       return 'not-match';
     }
 
     user.password = await bcrypt.hash(updatePassdto.newPassword, 10);
-    user.updatedAt = Math.floor(Date.now() / 100);
+    // user.updatedAt = new Date();
+    await this.userRepository.save(user);
 
     return {
       id: user.id,
       login: user.login,
-      version: user.version + 1,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
+      version: user.version,
+      createdAt: 1,
+      updatedAt: 2,
     };
   }
 
