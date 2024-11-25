@@ -6,7 +6,7 @@
 git clone https://github.com/YauhenMurachou/nodejs2024Q3-service
 ```
 
-switch on docker branch
+switch on auth-1 branch
 
 ## Installing NPM modules
 
@@ -40,16 +40,10 @@ Application runs by default on http://localhost:4000
 
 After application running open new terminal and enter:
 
-To run all tests without authorization
+To run all tests with authorization
 
 ```
-npm run test
-```
-
-To run only one of all test suites
-
-```
-npm run test -- <path to suite>
+npm run test:auth
 ```
 
 ### Auto-fix and format
