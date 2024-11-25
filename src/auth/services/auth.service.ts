@@ -32,7 +32,7 @@ export class AuthService {
     return this.repository.save(user);
   }
 
-  public async login(body: LoginDto): Promise<string | never> {
+  public async login(body: LoginDto) {
     const { login, password }: LoginDto = body;
     const user: UserEntity = await this.repository.findOne({
       where: { login },
@@ -53,12 +53,13 @@ export class AuthService {
 
     // this.repository.update(user.id, { updatedAt: new Date().toString() });
 
-    return this.helper.generateToken(user);
+    const accessToken = this.helper.generateToken(user);
+    const refreshToken = this.refresh(user);
+
+    return { accessToken, refreshToken };
   }
 
   public async refresh(user: UserEntity): Promise<string> {
-    // this.repository.update(user.id, { lastLoginAt: new Date() });
-
     return this.helper.generateToken(user);
   }
 }

@@ -19,15 +19,15 @@ export class AuthController {
   @Inject(AuthService)
   private readonly service: AuthService;
 
-  @Post('singup')
+  @Post('signup')
   @UseInterceptors(ClassSerializerInterceptor)
   private register(@Body() body: RegisterDto): Promise<UserEntity | never> {
     return this.service.register(body);
   }
 
   @Post('login')
-  private login(@Body() body: LoginDto): Promise<string | never> {
-    return this.service.login(body);
+  private async login(@Body() body: LoginDto) {
+    return await this.service.login(body);
   }
 
   @Post('refresh')

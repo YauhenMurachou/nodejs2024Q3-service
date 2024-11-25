@@ -10,13 +10,16 @@ import {
   BadRequestException,
   Put,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { AlbumService } from './album/album.service';
 import { CreateAlbumDto, UpdateAlbumDto } from './dto/album.dto';
 import { errors } from '../constants';
 import { validate } from 'class-validator';
+import { JwtAuthGuard } from '../auth/auth.guard';
 
 @Controller('album')
+@UseGuards(JwtAuthGuard)
 export class AlbumController {
   constructor(private readonly albumservice: AlbumService) {}
   @Get()
@@ -26,6 +29,7 @@ export class AlbumController {
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(200)
   async getById(@Param('id') id: string) {
     if (!this.isValidId(id)) {
@@ -47,6 +51,7 @@ export class AlbumController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   @HttpCode(201)
   async create(@Body() createAlbum: CreateAlbumDto) {
     const createAlbumDto = new CreateAlbumDto();
@@ -64,6 +69,7 @@ export class AlbumController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   async deleteAlbum(@Param('id') id: string) {
     if (!this.isValidId(id)) {
@@ -82,6 +88,7 @@ export class AlbumController {
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(200)
   async updateAlbum(
     @Param('id') id: string,

@@ -11,22 +11,27 @@ import {
   Delete,
   Put,
   ForbiddenException,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateUserDto, UpdatePasswordDto } from './dto/user.dto';
 import { UserService } from './user/user.service';
 import { errors } from '../constants';
 import { validate } from 'class-validator';
+import { JwtAuthGuard } from '../auth/auth.guard';
 @Controller('user')
+@UseGuards(JwtAuthGuard)
 export class UserController {
   constructor(private readonly Userservice: UserService) {}
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   @HttpCode(200)
   async getall() {
     return await this.Userservice.getall();
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   @HttpCode(201)
   async create(@Body() createuser: CreateUserDto) {
     if (!createuser.login || !createuser.password) {
@@ -39,6 +44,7 @@ export class UserController {
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(200)
   async getById(@Param('id') id: string) {
     if (!this.isValidId(id)) {
@@ -59,6 +65,7 @@ export class UserController {
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(200)
   async updatePass(
     @Param('id') id: string,
@@ -92,6 +99,7 @@ export class UserController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   async delUser(@Param('id') id: string) {
     if (!this.isValidId(id)) {

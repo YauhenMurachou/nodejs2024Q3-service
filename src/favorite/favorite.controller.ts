@@ -8,9 +8,11 @@ import {
   BadRequestException,
   HttpStatus,
   HttpException,
+  UseGuards,
 } from '@nestjs/common';
 import { errors } from '../constants';
 import { FavoriteService } from './favorite.service';
+import { JwtAuthGuard } from '../auth/auth.guard';
 
 export class UnprocessableEntityException extends HttpException {
   constructor(message?: string | object | any[]) {
@@ -19,16 +21,19 @@ export class UnprocessableEntityException extends HttpException {
 }
 
 @Controller('favs')
+@UseGuards(JwtAuthGuard)
 export class FavoriteController {
   constructor(private favoriteService: FavoriteService) {}
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   @HttpCode(200)
   async getAll() {
     return await this.favoriteService.getAll();
   }
 
   @Post('track/:id')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(201)
   async addTrack(@Param('id') id: string) {
     if (!this.isValidId(id)) {
@@ -49,6 +54,7 @@ export class FavoriteController {
   }
 
   @Post('album/:id')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(201)
   async addAlbum(@Param('id') id: string) {
     if (!this.isValidId(id)) {
@@ -69,6 +75,7 @@ export class FavoriteController {
   }
 
   @Post('artist/:id')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(201)
   async addArtist(@Param('id') id: string) {
     if (!this.isValidId(id)) {
@@ -89,18 +96,21 @@ export class FavoriteController {
   }
 
   @Delete('track/:id')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   async deleteTrack(@Param('id') id: string) {
     return await this.favoriteService.deleteTrack(id);
   }
 
   @Delete('album/:id')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   async deleteAlbum(@Param('id') id: string) {
     return await this.favoriteService.deleteAlbum(id);
   }
 
   @Delete('artist/:id')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   async deleteArtist(@Param('id') id: string) {
     return await this.favoriteService.deleteArtist(id);

@@ -10,14 +10,17 @@ import {
   BadRequestException,
   Put,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { validate } from 'class-validator';
 
 import { ArtistService } from './artist/artist.service';
 import { CreateArtistDto, UpdateArtistDto } from './dto/artist.dto';
 import { errors } from '../constants';
+import { JwtAuthGuard } from '../auth/auth.guard';
 
 @Controller('artist')
+@UseGuards(JwtAuthGuard)
 export class ArtistController {
   constructor(private readonly artistService: ArtistService) {}
   @Get()
@@ -27,6 +30,7 @@ export class ArtistController {
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   async getById(@Param('id') id: string) {
     if (!this.isValidId(id)) {
@@ -47,6 +51,7 @@ export class ArtistController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createArtistDto: CreateArtistDto) {
     if (!createArtistDto.name || typeof createArtistDto.grammy !== 'boolean') {
@@ -60,6 +65,7 @@ export class ArtistController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async delete(@Param('id') id: string) {
     if (!this.isValidId(id)) {
@@ -79,6 +85,7 @@ export class ArtistController {
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   async update(
     @Param('id') id: string,
